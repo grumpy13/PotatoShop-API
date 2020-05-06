@@ -1,0 +1,14 @@
+{
+  "name": "PotatoShop-API",
+  "version": "1.0.0",
+  "main": "app.js",
+  "repository": "https://github.com/grumpy13/PotatoShop-API.git",
+  "author": "<mariamqali13@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "start": "nodemon app.js"
+  },
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
