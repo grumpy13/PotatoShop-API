@@ -1,5 +1,5 @@
 const express = require("express");
-const potatoes = require("./potatoes");
+let potatoes = require("./potatoes");
 
 const app = express();
 
@@ -17,6 +17,17 @@ app.get("/potatoes/:potatoId", (req, res) => {
   const foundPotato = potatoes.find((potato) => potato.id === +potatoId);
   if (foundPotato) {
     res.json(foundPotato);
+  } else {
+    res.status(404).json({ message: "Potato not found" });
+  }
+});
+
+app.delete("/potatoes/:potatoId", (req, res) => {
+  const { potatoId } = req.params;
+  const foundPotato = potatoes.find((potato) => potato.id === +potatoId);
+  if (foundPotato) {
+    potatoes = potatoes.filter((potato) => potato.id !== +potatoId);
+    res.status(204).end();
   } else {
     res.status(404).json({ message: "Potato not found" });
   }
