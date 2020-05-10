@@ -1,7 +1,10 @@
 const express = require("express");
 let potatoes = require("./potatoes");
+const bodyParser = require("body-parser");
 
 const app = express();
+
+app.use(bodyParser.json());
 
 app.get("/", (req, res) => {
   console.log("HELLO");
@@ -31,6 +34,13 @@ app.delete("/potatoes/:potatoId", (req, res) => {
   } else {
     res.status(404).json({ message: "Potato not found" });
   }
+});
+
+app.post("/potatoes", (req, res) => {
+  const id = potatoes[potatoes.length - 1].id + 1;
+  const newPotato = { id, ...req.body };
+  potatoes.push(newPotato);
+  res.status(201).json(newPotato);
 });
 
 app.listen(8000, () => {
