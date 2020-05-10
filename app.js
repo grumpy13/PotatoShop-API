@@ -43,6 +43,17 @@ app.post("/potatoes", (req, res) => {
   res.status(201).json(newPotato);
 });
 
+app.put("/potatoes/:potatoId", (req, res) => {
+  const { potatoId } = req.params;
+  const foundPotato = potatoes.find((potato) => potato.id === +potatoId);
+  if (foundPotato) {
+    for (const key in req.body) foundPotato[key] = req.body[key];
+    res.status(204).end();
+  } else {
+    res.status(404).json({ message: "Potato not found" });
+  }
+});
+
 app.listen(8000, () => {
   console.log("Running on localhost:8000");
 });
