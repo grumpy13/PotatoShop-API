@@ -1,42 +1,66 @@
 let potatoes = require("../potatoes");
+const { Potato } = require("../db/models");
 
-exports.potatoCreate = (req, res) => {
-  const id = potatoes[potatoes.length - 1].id + 1;
-  const newPotato = { id, ...req.body };
-  potatoes.push(newPotato);
-  res.status(201).json(newPotato);
-};
-
-exports.potatoList = (req, res) => res.json(potatoes);
-
-exports.potatoDetail = (req, res) => {
-  const { potatoId } = req.params;
-  const foundPotato = potatoes.find((potato) => potato.id === +potatoId);
-  if (foundPotato) {
-    res.json(foundPotato);
-  } else {
-    res.status(404).json({ message: "Potato not found" });
+exports.potatoCreate = async (req, res) => {
+  try {
+    const newPotato = await Potato.create(req.body);
+    res.status(201).json(newPotato);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 };
 
-exports.potatoUpdate = (req, res) => {
-  const { potatoId } = req.params;
-  const foundPotato = potatoes.find((potato) => potato.id === +potatoId);
-  if (foundPotato) {
-    for (const key in req.body) foundPotato[key] = req.body[key];
-    res.status(204).end();
-  } else {
-    res.status(404).json({ message: "Potato not found" });
+exports.potatoList = async (req, res) => {
+  try {
+    const potatoes = await Potato.findAll({
+      attributes: { exclude: ["createdAt", "updatedAt"] },
+    });
+    res.json(potatoes);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 };
 
-exports.potatoDelete = (req, res) => {
+exports.potatoDetail = async (req, res) => {
+  try {
+    const { potatoId } = req.params;
+    const potato = await Potato.findByPk(potatoId);
+    if (potato) {
+      res.json(potato);
+    } else {
+      res.status(404).json({ message: "Potato not found" });
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+exports.potatoUpdate = async (req, res) => {
   const { potatoId } = req.params;
-  const foundPotato = potatoes.find((potato) => potato.id === +potatoId);
-  if (foundPotato) {
-    potatoes = potatoes.filter((potato) => potato.id !== +potatoId);
-    res.status(204).end();
-  } else {
-    res.status(404).json({ message: "Potato not found" });
+  try {
+    const foundPotato = await Potato.findByPk(potatoId);
+    if (foundPotato) {
+      await foundPotato.update(req.body);
+      res.status(204).end();
+    } else {
+      res.status(404).json({ message: "Potato not found" });
+    }
+  } catch (err) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+exports.potatoDelete = async (req, res) => {
+  const { potatoId } = req.params;
+  try {
+    const foundPotato = await Potato.findByPk(potatoId);
+    if (foundPotato) {
+      await foundPotato.destroy();
+      res.status(204).end();
+    } else {
+      res.status(404).json({ message: "Potato not found" });
+    }
+  } catch (err) {
+    res.status(500).json({ message: error.message });
   }
 };
