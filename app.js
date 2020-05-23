@@ -21,4 +21,17 @@ const run = async () => {
   });
 };
 
+app.use((err, req, res, next) => {
+  res.status(err.status || 500);
+  res.json({
+    message: err.message || "Internal Server Error",
+  });
+});
+
+app.use((req, res, next) => {
+  const err = new Error("Path Not Found");
+  err.status = 404;
+  next(err);
+});
+
 run();
